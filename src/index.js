@@ -35,12 +35,49 @@ const MORSE_TABLE = {
     '---..':  '8',
     '----.':  '9',
     '-----':  '0',
+    //'**********': ' ', //пробел добавим в константы для 2го решения
 };
 
 function decode(expr) {
     // write your solution here
+    let str = ''; //пустая строка в которую положим результат
+
+    for(let i=0; i<expr.length; i+=10) { //идем до конца длины строки по 10 элем.
+        valueNumber = expr.substring(i, i+10); //в строке с числами(expr) substring() извлекаем символы от i до i+10 возвр.строку
+
+        if(valueNumber === '**********') { //если попалось 10 *, в str запишем пробел и идем далее
+            str += ' ';
+            continue;
+        }
+
+        let morseCode = ''; //строка для кода морзе пустая
+        for (let j = 0; j < valueNumber.length; j+=2) { //стр. с числами('0000111011') преобраз. в стр. с символами (-.-)
+            valueMorse = valueNumber.substring(j, j+2); //берем 10 символов из valueNumber и смотрим по 2
+            if (valueMorse === '00') continue;
+            if (valueMorse === '10') morseCode += '.';
+            if (valueMorse === '11') morseCode += '-';
+        }
+        str += MORSE_TABLE[morseCode]; //в строку начальную записываем morseCode в зависимости данных MORSE_TABLE
+    }
+    return str;
 }
+
 
 module.exports = {
     decode
 }
+
+/*
+/решение №2
+добавим пробел в MORSE_TABLE как ключ:значение
+'**********': ' ',
+
+function decode(expr) {
+    return expr.match(/.{10}/g).map(value=>MORSE_TABLE[value.replace(/10/g,'.').replace(/11/g,'-').replace(/0/g,'')]).join('')
+}
+
+/10 любых символов str.match(regexp) match(/ /g) возвращает массив получившихся совпадений при сопоставлении строки с регулярным выражением.
+/каждый value состоящий из 10 символов, запишем в новый массив через map, с использ.объекта MORSE_TABLE и заменяя 10, 11 и 0
+/join('') объединяет все элементы массива (или массивоподобного объекта) в строку.
+*/
+
